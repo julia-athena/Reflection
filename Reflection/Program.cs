@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.Json;
 
 namespace Reflection
 {
@@ -7,8 +8,10 @@ namespace Reflection
     {
         static void Main(string[] args)
         {
+            int n = 1000;
             CsvTest1();
-            CsvTest2();
+            CsvTest2(n);
+            JsonTest1(n);
         }
 
         static public void CsvTest1()
@@ -22,23 +25,38 @@ namespace Reflection
             Console.WriteLine(str);
         }
 
-        static public void CsvTest2()
+        static public void CsvTest2(int n)
         {
             var f = F.Get();
             Media<F> csv = new CsvMedia<F>();
             csv = csv.MediaWith(f);
-            //замерить время
-            for (int i = 0; i < 1000; i++)
+            DateTime start;
+            DateTime stop;
+            TimeSpan elapsed = new TimeSpan();
+            start = DateTime.Now;
+            for (int i = 0; i <= n; i++)
             {
                 var str = csv.AsString();
             }
-            //замерить время 
-            //разница времен
+            stop = DateTime.Now;
+            elapsed = stop.Subtract(start);
+            Console.WriteLine(Convert.ToString(elapsed.TotalMilliseconds));
         }
 
-        static public void JsonTest()
+        static public void JsonTest1(int n)
         {
             var f = F.Get();
+            DateTime start;
+            DateTime stop;
+            TimeSpan elapsed = new TimeSpan();
+            start = DateTime.Now;
+            for (int i = 0; i <= n; i++)
+            {
+                var str = JsonSerializer.Serialize<F>(f);
+            }
+            stop = DateTime.Now;
+            elapsed = stop.Subtract(start);
+            Console.WriteLine(Convert.ToString(elapsed.TotalMilliseconds));
         }
     }
 }
