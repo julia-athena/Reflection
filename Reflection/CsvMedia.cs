@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Reflection
 {
-    public class CsvMedia<T>: Media<T> where T: new()
+    public class CsvMedia<T>: Media<T> where T: class, new()
     {
         public readonly IList<T> Data;
         public readonly CsvFormat Format;
