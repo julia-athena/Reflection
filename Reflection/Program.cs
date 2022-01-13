@@ -12,6 +12,8 @@ namespace Reflection
             CsvTest1();
             CsvTest2(n);
             JsonTest1(n);
+            CsvTest4();
+            CsvTest5(n);
         }
 
         static public void CsvTest1()
@@ -53,6 +55,36 @@ namespace Reflection
             for (int i = 0; i <= n; i++)
             {
                 var str = JsonSerializer.Serialize<F>(f);
+            }
+            stop = DateTime.Now;
+            elapsed = stop.Subtract(start);
+            Console.WriteLine(Convert.ToString(elapsed.TotalMilliseconds));
+        }
+        static public void CsvTest4()
+        {
+            var f = F.Get();
+            var f1 = new F() { i1 = 5, i2 = 4, i3 = 3, i4 = 2, i5 = 1 };
+            Media<F> media = new CsvMedia<F>();
+            media = media.MediaWith(f).MediaWith(f1);
+            var csv = media.AsString();
+            Content<F> content = new CsvContent<F>(csv);
+            var data = content.Data();
+            Console.WriteLine("_____");
+        }
+        static public void CsvTest5(int n)
+        {
+            var f = F.Get();
+            Media<F> media = new CsvMedia<F>();
+            media = media.MediaWith(f);
+            string csv = media.AsString();
+            Content<F> content = new CsvContent<F>(csv);
+            DateTime start;
+            DateTime stop;
+            TimeSpan elapsed = new TimeSpan();
+            start = DateTime.Now;
+            for (int i = 0; i <= n; i++)
+            {
+                var data = content.Data();
             }
             stop = DateTime.Now;
             elapsed = stop.Subtract(start);

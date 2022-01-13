@@ -29,13 +29,13 @@ namespace Reflection
 
         private string[] Lines()
         {
-            var lines = Csv.Split(Format.RowSeparator);
+            var lines = Csv.Split(Format.RowSeparator, StringSplitOptions.RemoveEmptyEntries);
             return lines;
         }
 
         private IList<T> DeserializedData(string[] lines)
         {
-            string[] columns = lines[0].Split(Format.ValueSeparator);
+            string[] columns = lines[0].Split(Format.ValueSeparator, StringSplitOptions.RemoveEmptyEntries);
             var ListData = new List<T>();
             for(int i = 1; i < lines.Length; i++)
             {
@@ -47,17 +47,25 @@ namespace Reflection
 
         private T DeserialisedT(string[] columns, string line)
         {
-            var values = line.Split(Format.ValueSeparator);
+            var values = line.Split(Format.ValueSeparator, StringSplitOptions.RemoveEmptyEntries);
             if (columns.Length != values.Length) throw new ApplicationException("Csv has invalid format. Columns != Values");
             var item = new T();
             var type = item.GetType();
             for(int i = 0; i < columns.Length; i++)
             {
                 var member = type.GetMember(columns[i], BindingFlags)?[0];
-                if (member.MemberType == MemberTypes.Field) type.GetField(columns[i], BindingFlags).SetValue(item,values[i]); //todo сконвертировать значение к типу поля
-                else if (member.MemberType == MemberTypes.Property) type.GetProperty(columns[i], BindingFlags).SetValue(item, values[i]); //todo сконвертировать значение к типу свойства
+                SetValueForMember(item, columns[i], values[i]);
             }
             return item;
+        }
+
+        private void SetValueForMember(T item, string memberName, string value)
+        {
+            var type = item.GetType();
+            var member = type.GetMember(memberName, BindingFlags)?[0];
+            if (member.MemberType == MemberTypes.Field) ((FieldInfo)member).SetValue(item, Convert.ChangeType(value, ((FieldInfo)member).FieldType));
+            else if (member.MemberType == MemberTypes.Property) ((PropertyInfo)member).SetValue(item, Convert.ChangeType(value, ((PropertyInfo)member).PropertyType));
+
         }
 
     }
